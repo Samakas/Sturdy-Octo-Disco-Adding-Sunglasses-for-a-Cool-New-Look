@@ -33,41 +33,65 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Read the input face image
 img = cv2.imread('Akash (1).jpg')
+# Display the face image with RGB channels (OpenCV uses BGR, Matplotlib uses RGB)
 plt.imshow(img[:,:,::-1]);plt.title("Face")
 
-glassPNG=cv2.imread('glass2.png',-1)
+# Read the sunglasses image with alpha channel (4 channels: BGR + Alpha)
+glassPNG = cv2.imread('glass2.png', -1)
+# Display the sunglasses image
 plt.imshow(glassPNG[:,:,::-1]);plt.title("glass")
 
-glassPNG = cv2.resize(glassPNG,(200,60))
-print("image Dimension =",glassPNG.shape)
+# Resize the sunglasses to fit on the face
+glassPNG = cv2.resize(glassPNG, (200, 60))
+print("image Dimension =", glassPNG.shape)
 
-glassBGR = glassPNG[:,:,0:3]
-glassMask1 = glassPNG[:,:,3]
-plt.figure(figsize=[15,15])
-plt.subplot(121);plt.imshow(glassBGR[:,:,::-1]);plt.title('Sunglass Color channels');
-plt.subplot(122);plt.imshow(glassMask1,cmap='gray');plt.title('Sunglass Alpha channel');
+# Extract the BGR channels and the alpha channel separately from the sunglasses image
+glassBGR = glassPNG[:, :, 0:3]  # BGR part
+glassMask1 = glassPNG[:, :, 3]  # Alpha channel (transparency)
 
-faceWithGlasses= img.copy()
-faceWithGlasses[160:220,105:305]=glassBGR
-plt.imshow(faceWithGlasses[...,::-1])
+# Display the sunglasses' BGR channels and alpha channel
+plt.figure(figsize=[15, 15])
+plt.subplot(121); plt.imshow(glassBGR[:, :, ::-1]); plt.title('Sunglass Color channels')
+plt.subplot(122); plt.imshow(glassMask1, cmap='gray'); plt.title('Sunglass Alpha channel')
 
-glassMask = cv2.merge((glassMask1,glassMask1,glassMask1))
-glassMask = np.uint8(glassMask/255)
+# Copy the original face image to avoid altering it
+faceWithGlasses = img.copy()
+# Overlay the sunglasses BGR part onto the face image at the specified location
+faceWithGlasses[160:220, 105:305] = glassBGR
+# Display the face with sunglasses
+plt.imshow(faceWithGlasses[..., ::-1])
+
+# Create a mask using the alpha channel and normalize its values to 0 and 1
+glassMask = cv2.merge((glassMask1, glassMask1, glassMask1))  # Merge alpha channel to 3-channel mask
+glassMask = np.uint8(glassMask / 255)  # Normalize values to 0-1
+
+# Copy the original face image for further processing
 faceWithGlassesArithmetic = img.copy()
-eyeROI= faceWithGlassesArithmetic[160:220,105:305]
-maskedEye = cv2.multiply(eyeROI,(1-  glassMask ))
-maskedGlass = cv2.multiply(glassBGR,glassMask)
+# Select the region of interest (ROI) where the glasses will be placed
+eyeROI = faceWithGlassesArithmetic[160:220, 105:305]
+# Mask the eye region by keeping only the background
+maskedEye = cv2.multiply(eyeROI, (1 - glassMask))
+# Mask the sunglasses image by keeping only the sunglasses part
+maskedGlass = cv2.multiply(glassBGR, glassMask)
+# Combine the masked eye region and masked sunglasses to create the final augmented ROI
 eyeRoiFinal = cv2.add(maskedEye, maskedGlass)
-plt.figure(figsize=[20,20])
-plt.subplot(131);plt.imshow(maskedEye[...,::-1]);plt.title("Masked Eye Region")
-plt.subplot(132);plt.imshow(maskedGlass[...,::-1]);plt.title("Masked Sunglass Region")
-plt.subplot(133);plt.imshow(eyeRoiFinal[...,::-1]);plt.title("Augmented Eye and Sunglass")
 
-faceWithGlassesArithmetic[160:220,105:305]=eyeRoiFinal
-plt.figure(figsize=[10,10]);
-plt.subplot(121);plt.imshow(img[:,:,::-1]); plt.title("Original Image");
-plt.subplot(122);plt.imshow(faceWithGlassesArithmetic[:,:,::-1]);plt.title("With Sunglasses");
+# Display the masked eye, masked sunglasses, and final augmented region
+plt.figure(figsize=[20, 20])
+plt.subplot(131); plt.imshow(maskedEye[..., ::-1]); plt.title("Masked Eye Region")
+plt.subplot(132); plt.imshow(maskedGlass[..., ::-1]); plt.title("Masked Sunglass Region")
+plt.subplot(133); plt.imshow(eyeRoiFinal[..., ::-1]); plt.title("Augmented Eye and Sunglass")
+
+# Replace the original eye region in the face image with the augmented region
+faceWithGlassesArithmetic[160:220, 105:305] = eyeRoiFinal
+
+# Display the final output image
+plt.figure(figsize=[10, 10])
+plt.subplot(121); plt.imshow(img[:, :, ::-1]); plt.title("Original Image")
+plt.subplot(122); plt.imshow(faceWithGlassesArithmetic[:, :, ::-1]); plt.title("With Sunglasses")
+
 ```
 ## Output:
 ### 1.Original image:
