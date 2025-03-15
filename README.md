@@ -71,22 +71,22 @@ plt.subplot(122);plt.imshow(faceWithGlassesArithmetic[:,:,::-1]);plt.title("With
 ```
 ## Output:
 ### 1.Original image:
-![alt text](<original image.png>)
+![alt text](<Akash (1).jpg>)
 
 ### 2.Glass:
-![alt text](glass2.png)
+![alt text](<Screenshot 2025-03-08 114525.png>)
 
 ### 3.Glass color channel:
-![alt text](<split glass.png>)
+![alt text](<Screenshot 2025-03-08 114616.png>)
 
 ### 4.Face With Glass:
-![alt text](<glass placement.png>)
+![alt text](<Screenshot 2025-03-08 114640.png>)
 
 ### 5.Eye and glass region:
-![alt text](<split placement.png>)
+![alt text](<Screenshot 2025-03-08 114739.png>)
 
 ### 6.Final image with glass:
-![alt text](<final image with glass.png>)
+![alt text](<Screenshot 2025-03-08 114657.png>)
 
 ## Result:
 Thus, the creative project designed to overlay sunglasses on individual passport size photo has been successfully executed.
